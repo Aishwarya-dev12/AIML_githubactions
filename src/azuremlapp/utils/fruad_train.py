@@ -1,5 +1,6 @@
 import os
 import pandas as pd 
+import joblib
 from dotenv import load_dotenv 
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
@@ -39,6 +40,32 @@ def fraud_detection(file_path):
     cm=confusion_matrix(y_test, y_pred)
     print("Confusion Matrix:")
     print(cm)
+
+
+    os.makedirs("outputs", exist_ok=True)
+
+    model_path = os.getenv('model_path')
+
+    artifact = {
+            "model": clf,
+            "feature_columns": X.columns.tolist(),
+            "metrics": {
+                "accuracy": accuracy,
+                "f1_score": f1,
+                "precision": precision,
+                "recall": recall
+            }
+        }
+
+
+
+    joblib.dump(artifact, model_path)
+
+    print(f"\nModel saved to: {model_path}")
+
+    return model_path
+
+
 
 if __name__=="__main__":
     file_path=os.getenv("file_path")
